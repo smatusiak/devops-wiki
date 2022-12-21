@@ -29,6 +29,9 @@ import pandas as pd
 from dotenv import load_dotenv
 load_dotenv()
 
+import os
+import openai
+
 def get_search_results(question):
     '''
     Perform a Google search
@@ -129,7 +132,29 @@ def generate_blog_content(df):
     '''
 
     # load api key from dotenv
-    api_key = os.getenv('OPENAI_API_KEY')
+    openai.api_key = os.getenv('OPENAI_API_KEY')
+
+    # concatenate all content from dataframe
+    content = ' '.join(df['content'])
+
+    # create prompt intro
+    prompt_intro = 'Create 10 blog posts. Use the below as training data. Format the posts in Markdown using <---> as the page end. Include the following content including:\n- title\n- excerpt\n- tl;dr\n- intro\n- details\n- conclusion\n- references\n- tags\n- cheat sheet\n\n'
+    # send content to OpenAI GPT-3
+    response = openai.Completion.create(
+        model = 'text-davinci-003',
+        prompt = prompt_intro + content,
+        temperature = 0.9,
+        max_tokens = 4000,
+        top_p = 1,
+        frequency_penalty = 0,
+        presence_penalty = 0
+    }
+    
+
+
+
+
+
     
 # main function for user input - question, category, theme
 def main():
